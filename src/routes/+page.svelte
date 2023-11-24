@@ -1,2 +1,92 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+ import { EditorState } from "@codemirror/state";
+ import { basicSetup } from "codemirror";
+ import { EditorView, keymap } from "@codemirror/view";
+ import { indentWithTab } from "@codemirror/commands";
+ import { onMount } from "svelte";
+
+ onMount(() => {
+	 let startState = EditorState.create({
+		 doc: "Hello World",
+		 extensions: [
+			 basicSetup,
+			 keymap.of([indentWithTab]),
+		 ]
+	 });
+
+	 let view = new EditorView({
+		 state: startState,
+		 parent: document.getElementById("code-editor")
+	 });
+ })
+
+ function run_code () {
+	 console.log("RUNNING AS FAST AS I CAN!");
+ }
+
+</script>
+
+
+<main>
+	<header>
+		<h1>Ludus</h1>
+		<a href="/" on:click|preventDefault={run_code}>RUN</a>
+	</header>
+	<div id="code-editor"></div>
+	<div id="canv"></div>
+	<div id="console"></div>
+</main>
+
+<style>
+ main {
+	 display: grid;
+	 width: 100%;
+	 height: 100%;
+	 grid-template-columns: 1fr 1fr;
+	 grid-template-rows: 2em auto;
+	 grid-template-areas:
+		 "header header"
+		 "editor canv"
+		 "editor canv"
+		 "editor console";
+ }
+
+ header {
+	 grid-area: header;
+	 height: 2em;
+	 display: flex;
+	 align-items: baseline;
+	 justify-content: space-around;
+ }
+
+ header h1 {
+	 font-size: 1em;
+ }
+
+ header a {
+	 display: block;
+ }
+
+ #code-editor {
+	 background: #f00;
+	 min-height: 4em;
+	 grid-area: editor;
+	 height: 100%;
+ }
+
+ #code-editor :global(.cm-editor) {
+	 height: 100%;
+ }
+
+ #canv {
+	 background: #0f0;
+	 height: 100%;
+	 grid-area: canv;
+ }
+
+ #console {
+	 background: #00f;
+	 height: 100%;
+	 grid-area: console;
+ }
+</style>
