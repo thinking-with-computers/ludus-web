@@ -68,7 +68,6 @@
  }
 
  #code-editor {
-	 background: #f00;
 	 min-height: 4em;
 	 grid-area: editor;
 	 height: 100%;
@@ -79,13 +78,14 @@
  }
 
  #canv {
-	 background: #0f0;
 	 height: 100%;
+	 background: #000;
 	 grid-area: canv;
  }
 
  #console {
-	 background: #00f;
+	 background: #000;
+	 border-top: 2px solid white;
 	 height: 100%;
 	 grid-area: console;
  }
