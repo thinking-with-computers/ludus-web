@@ -26,7 +26,6 @@
 
 </script>
 
-
 <main>
 	<header>
 		<h1>Ludus</h1>
