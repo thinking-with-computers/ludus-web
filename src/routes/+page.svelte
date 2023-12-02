@@ -4,6 +4,8 @@
  import { EditorView, keymap } from "@codemirror/view";
  import { indentWithTab } from "@codemirror/commands";
  import { onMount } from "svelte";
+ import P5 from "p5-svelte";
+ import { run } from "@ludus/ludus-js-pure";
 
  onMount(() => {
 	 let startState = EditorState.create({
@@ -22,6 +24,17 @@
 
  function run_code () {
 	 console.log("RUNNING AS FAST AS I CAN!");
+	 console.log(run("add(1, 2)"));
+ }
+
+ const sketch = (p5) => {
+	 p5.setup = () => {
+
+	 }
+
+	 p5.draw = () => {
+
+	 }
  }
 
 </script>
@@ -32,7 +45,9 @@
 		<a href="/" on:click|preventDefault={run_code}>RUN</a>
 	</header>
 	<div id="code-editor"></div>
-	<div id="canv"></div>
+	<div id="canv">
+		<P5 {sketch} />
+	</div>
 	<div id="console"></div>
 </main>
 
@@ -87,5 +102,10 @@
 	 border-top: 2px solid white;
 	 height: 100%;
 	 grid-area: console;
+ }
+
+ :global(.p5Canvas) {
+	 width: 100%;
+	 height: 100%;
  }
 </style>
