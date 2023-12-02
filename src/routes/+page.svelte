@@ -7,29 +7,42 @@
  import P5 from "p5-svelte";
  import { run } from "@ludus/ludus-js-pure";
 
+ let editorState, view, ludusResponse = "";
+
  onMount(() => {
-	 let startState = EditorState.create({
-		 doc: "Hello World",
+	 editorState = EditorState.create({
+		 doc: "add(1, 2)",
 		 extensions: [
 			 basicSetup,
 			 keymap.of([indentWithTab]),
 		 ]
 	 });
 
-	 let view = new EditorView({
-		 state: startState,
+	 view = new EditorView({
+		 state: editorState,
 		 parent: document.getElementById("code-editor")
 	 });
  })
 
- function run_code () {
-	 console.log("RUNNING AS FAST AS I CAN!");
-	 console.log(run("add(1, 2)"));
+ async function run_code () {
+	 let code = view.state.doc.toString();
+	 let res = await run(code);
+
+	 console.log(res);
+	 if (res.result) {
+		 ludusResponse += "<p>" + res.result + "</p>";
+	 }
  }
 
  const sketch = (p5) => {
-	 p5.setup = () => {
+	 let cnv;
 
+	 p5.setup = () => {
+		 let canvas_elt = document.getElementById("canv");
+		 let h = canvas_elt.clientHeight;
+		 let w = canvas_elt.clientWidth;
+		 // cnv = p5.createCanvas(w, h);
+		 // cnv.parent("canv");
 	 }
 
 	 p5.draw = () => {
@@ -48,7 +61,11 @@
 	<div id="canv">
 		<P5 {sketch} />
 	</div>
-	<div id="console"></div>
+	<div id="console">
+		{#if ludusResponse}
+			{@html ludusResponse}
+		{/if}
+	</div>
 </main>
 
 <style>
@@ -57,7 +74,7 @@
 	 width: 100%;
 	 height: 100%;
 	 grid-template-columns: 1fr 1fr;
-	 grid-template-rows: 2em auto;
+	 grid-template-rows: 2em auto auto 12em;
 	 grid-template-areas:
 		 "header header"
 		 "editor canv"
@@ -100,8 +117,12 @@
  #console {
 	 background: #000;
 	 border-top: 2px solid white;
-	 height: 100%;
+	 /* height: 100%; */
 	 grid-area: console;
+	 color: white;
+	 padding: 2ch;
+	 box-sizing: border-box;
+	 overflow: scroll;
  }
 
  :global(.p5Canvas) {
