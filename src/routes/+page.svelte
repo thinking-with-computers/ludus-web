@@ -43,8 +43,9 @@
 		 let canvas_elt = document.getElementById("canv");
 		 let h = canvas_elt.clientHeight;
 		 let w = canvas_elt.clientWidth;
-		 // cnv = p5.createCanvas(w, h);
-		 // cnv.parent("canv");
+		 cnv = p5.createCanvas(w, h);
+		 cnv.parent("canv");
+		 console.log(cnv);
 	 }
 
 	 p5.draw = () => {
@@ -103,7 +104,6 @@
  #code-editor {
 	 min-height: 4em;
 	 grid-area: editor;
-	 height: 100%;
  }
 
  #code-editor :global(.cm-editor) {
@@ -111,20 +111,22 @@
  }
 
  #canv {
-	 height: 100%;
 	 background: #000;
 	 grid-area: canv;
+	 padding: 0;
+	 margin: 0;
+	 overflow: hidden;
  }
 
  #console {
 	 background: #000;
 	 border-top: 2px solid white;
-	 /* height: 100%; */
 	 grid-area: console;
 	 color: white;
 	 padding: 2ch;
 	 box-sizing: border-box;
-	 overflow: scroll;
+	 overflow-y: scroll;
+	 font-family: 'Courier New', Courier, monospace;
  }
 
  :global(.p5Canvas) {
