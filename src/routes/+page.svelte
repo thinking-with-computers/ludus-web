@@ -27,8 +27,8 @@
  async function run_code () {
 	 let code = view.state.doc.toString();
 	 let res = await run(code);
-
-	 console.log(res);
+	 console.log("running: ", code);
+	 console.log("result: ", res);
 	 if (res.result) {
 		 ludusResponse += "<p>" + res.result + "</p>";
 	 }
