@@ -25,12 +25,15 @@
  })
 
  async function run_code () {
-	 let code = view.state.doc.toString();
+	 let raw_selection = view.state.selection.toJSON();
+	 let selection = {start: raw_selection.ranges[0].anchor, end: raw_selection.ranges[0].head};
+	 let code = (selection.end > selection.start) ? view.state.doc.toString().slice(selection.start, selection.end) : view.state.doc.toString();
+	 console.log(selection);
 	 let res = await run(code);
 	 console.log("running: ", code);
 	 console.log("result: ", res);
 	 if (res.result) {
-		 ludusResponse += "<p>" + res.result + "</p>";
+		 ludusResponse = "<p>" + res.result + "</p>" + ludusResponse;
 	 }
  }
 
