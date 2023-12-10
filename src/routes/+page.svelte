@@ -7,11 +7,47 @@
  import P5 from "p5-svelte";
  import { run } from "@ludus/ludus-js-pure";
 
+ /*
+
+TODO:
+* [ ] change editor font to Victor Mono (we want ligatures)
+		- see: https://codemirror.net/examples/styling/
+* [ ] get Victor Mono cursive italics wired up
+* [ ] keep editor at fixed width, add line wrapping
+* [ ] add syntax highlighting (Lezer parser is almost ready to go)
+* [ ] figure out a documentation scheme
+
+ */
+
  let editorState, view, ludusResponse = "";
 
  onMount(() => {
 	 editorState = EditorState.create({
-		 doc: "add(1, 2)",
+		 doc: `& Welcome to Ludus!
+& to run the code in this window, hit the RUN button
+& Ludus will evaluate this script and return its value
+& lines that begin with an ampersand--&--are comments
+& comments don't have any effect
+
+& here's your usual first program:
+print! ("Hello, world!")
+
+& the message and return value appear in the bottom right pane
+
+& ... here are a few other things you can do
+
+& send the turtle forward 100 paces:
+& forward! (100)
+
+& turn the turtle right a quarter turn:
+& right! (0.25)
+
+& and, if you're already thinking about Logo:
+& repeat 4 {
+&	forward! (100)
+&	right! (0.25)
+& }
+`,
 		 extensions: [
 			 basicSetup,
 			 keymap.of([indentWithTab]),
@@ -24,20 +60,51 @@
 	 });
  })
 
- async function run_code () {
+ let p;
+
+ function draw_turtle (draw) {
+ 	p.push();
+ 	p.translate(p.width / 2, p.height / 2);
+ 	p.rotate(p.PI);
+ 	for (const [method, ...args] of draw) {
+ 		//console.log("Calling p5 ", method, "(", args.join(", "), ")");
+ 		p[method](...args);
+ 	}
+ 	p.pop();
+ }
+
+ function print_console (msgs) {
+ 	//ludusResponse = ">>> <i>Ludus run</i> <<< <br/>" + ludusResponse;
+ 	for (const raw_msg of msgs) {
+ 		for (const msg of raw_msg.split("\n").reverse()) {
+	 		console.log(msg);
+	 		ludusResponse = msg + "<br/>" + ludusResponse;
+	 	}
+ 	}
+ }
+
+ function run_code () {
 	 let raw_selection = view.state.selection.toJSON();
 	 let selection = {start: raw_selection.ranges[0].anchor, end: raw_selection.ranges[0].head};
 	 let code = (selection.end > selection.start) ? view.state.doc.toString().slice(selection.start, selection.end) : view.state.doc.toString();
-	 let res = await run(code);
-	 console.log("running: ", code);
-	 console.log("result: ", res);
-	 if (res.result) {
-		 ludusResponse = "<p>" + res.result + "</p>" + ludusResponse;
-	 }
+	 let ludus_response = run(code);
+	 let log = ludus_response.console ?? [];
+	 let {result, draw, errors = []} = ludus_response;
+	 //console.log("running: ", code);
+	 //console.log("result: ", result);
+	 if (draw) { draw_turtle(draw); } else { ludus_init(); }
+	 print_console([...errors, ...log]);
+	 if (result) ludusResponse = "<i>:ludus=> </i>" + result + "<br/>" + ludusResponse;
  }
+
+function ludus_init () {
+	let {draw} = run(":nothing"); // get a response running nothing
+	draw_turtle(draw); // draw the base state
+}
 
  const sketch = (p5) => {
 	 let cnv;
+	 p = p5;
 
 	 p5.setup = () => {
 		 let canvas_elt = document.getElementById("canv");
@@ -46,10 +113,9 @@
 		 cnv = p5.createCanvas(w, h);
 		 cnv.parent("canv");
 		 console.log(cnv);
-	 }
-
-	 p5.draw = () => {
-
+		 p5.noLoop();
+		 p5.background(0);
+		 ludus_init();
 	 }
  }
 
@@ -59,6 +125,8 @@
 	<header>
 		<h1>Ludus</h1>
 		<a href="/" on:click|preventDefault={run_code}>RUN</a>
+		<link rel="stylesheet"
+  			href="https://fonts.googleapis.com/css?family=Victor+Mono">
 	</header>
 	<div id="code-editor"></div>
 	<div id="canv">
@@ -95,10 +163,20 @@
 
  header h1 {
 	 font-size: 1em;
+	 font-family: 'Victor Mono';
+	 font-style: italic;
+	 font-weight: 200;
  }
 
  header a {
 	 display: block;
+	 font-size: 1em;
+	 font-family: 'Victor Mono';
+	 font-style: bold;
+	 font-weight: 800;
+	 text-decoration: dashed underline overline;
+	 color: #111111;
+
  }
 
  #code-editor {
@@ -126,7 +204,9 @@
 	 padding: 2ch;
 	 box-sizing: border-box;
 	 overflow-y: scroll;
-	 font-family: 'Courier New', Courier, monospace;
+	 font-family: 'Victor Mono', monospace;
+	 font-weight: 200;
+	 font-size: 12px;
  }
 
  :global(.p5Canvas) {
