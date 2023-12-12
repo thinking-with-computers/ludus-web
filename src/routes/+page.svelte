@@ -16,6 +16,9 @@ TODO:
 * [ ] keep editor at fixed width, add line wrapping
 * [ ] add syntax highlighting (Lezer parser is almost ready to go)
 * [ ] figure out a documentation scheme
+* [ ] figure out how to redraw things on resize
+* [ ] write a "tour" of ludus with different code
+* [ ] wire up a system whereby the code is loaded from a file, not hardcoded into js/svelte
 
  */
 
@@ -67,14 +70,12 @@ print! ("Hello, world!")
  	p.translate(p.width / 2, p.height / 2);
  	p.rotate(p.PI);
  	for (const [method, ...args] of draw) {
- 		//console.log("Calling p5 ", method, "(", args.join(", "), ")");
  		p[method](...args);
  	}
  	p.pop();
  }
 
  function print_console (msgs) {
- 	//ludusResponse = ">>> <i>Ludus run</i> <<< <br/>" + ludusResponse;
  	for (const raw_msg of msgs) {
  		for (const msg of raw_msg.split("\n").reverse()) {
 	 		console.log(msg);
@@ -90,8 +91,6 @@ print! ("Hello, world!")
 	 let ludus_response = run(code);
 	 let log = ludus_response.console ?? [];
 	 let {result, draw, errors = []} = ludus_response;
-	 //console.log("running: ", code);
-	 //console.log("result: ", result);
 	 if (draw) { draw_turtle(draw); } else { ludus_init(); }
 	 print_console([...errors, ...log]);
 	 if (result) ludusResponse = "<i>:ludus=> </i>" + result + "<br/>" + ludusResponse;
@@ -159,6 +158,7 @@ function ludus_init () {
 	 display: flex;
 	 align-items: baseline;
 	 justify-content: space-around;
+	 background: #245688;
  }
 
  header h1 {
@@ -166,6 +166,7 @@ function ludus_init () {
 	 font-family: 'Victor Mono';
 	 font-style: italic;
 	 font-weight: 200;
+	 color: #FFFFFF;
  }
 
  header a {
@@ -174,9 +175,14 @@ function ludus_init () {
 	 font-family: 'Victor Mono';
 	 font-style: bold;
 	 font-weight: 800;
-	 text-decoration: dashed underline overline;
-	 color: #111111;
-
+	 color: #FFFFFF;
+	 background: #55555555;
+	 padding-top: 2px;
+	 padding-bottom: 2px;
+	 padding-left: 6px;
+	 padding-right: 6px;
+	 border-style: solid;
+	 border-color: #AAAAAA55;
  }
 
  #code-editor {
