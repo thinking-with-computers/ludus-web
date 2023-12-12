@@ -13,7 +13,7 @@
 		- see: https://codemirror.net/examples/styling/
 	* [ ] get Victor Mono cursive italics wired up -> Matt
 	* [ ] keep editor at fixed width, add line wrapping -> Matt
-	* [ ] add syntax highlighting (Lezer parser is almost ready to go) -> Scott
+	* [ ] add syntax highlighting (Lezer parser is almost ready to go) -> Scott (or Matt once the Lezer parser is ready)
 	* [ ] figure out a documentation scheme -> Matt
 	* [ ] figure out how to redraw things on resize -> Matt
 	* [ ] write a "tour" of ludus with different code -> ?
