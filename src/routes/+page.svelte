@@ -20,7 +20,8 @@
 	* [ ] wire up a system whereby the code is loaded from a file, not hardcoded into js/svelte -> Matt
 	* [ ] improve console formatting -> Matt
 	* [ ] run only selected code -> Matt
-
+	* [ ] change console to have newest at bottom -> Matt
+	* [ ] add single line console input for quick testing/doc commands -> Matt
 	*/
 
  let editorState, view, ludusResponse = "";
