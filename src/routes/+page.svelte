@@ -8,19 +8,20 @@
  import { run } from "@ludus/ludus-js-pure";
 
  /*
-
-TODO:
-* [ ] change editor font to Victor Mono (we want ligatures)
+		TODO:
+	* [ ] change editor font to Victor Mono (we want ligatures) -> Matt
 		- see: https://codemirror.net/examples/styling/
-* [ ] get Victor Mono cursive italics wired up
-* [ ] keep editor at fixed width, add line wrapping
-* [ ] add syntax highlighting (Lezer parser is almost ready to go)
-* [ ] figure out a documentation scheme
-* [ ] figure out how to redraw things on resize
-* [ ] write a "tour" of ludus with different code
-* [ ] wire up a system whereby the code is loaded from a file, not hardcoded into js/svelte
+	* [ ] get Victor Mono cursive italics wired up -> Matt
+	* [ ] keep editor at fixed width, add line wrapping -> Matt
+	* [ ] add syntax highlighting (Lezer parser is almost ready to go) -> Scott
+	* [ ] figure out a documentation scheme -> Matt
+	* [ ] figure out how to redraw things on resize -> Matt
+	* [ ] write a "tour" of ludus with different code -> ?
+	* [ ] wire up a system whereby the code is loaded from a file, not hardcoded into js/svelte -> Matt
+	* [ ] improve console formatting -> Matt
+	* [ ] run only selected code -> Matt
 
- */
+	*/
 
  let editorState, view, ludusResponse = "";
 
@@ -50,7 +51,7 @@ print! ("Hello, world!")
 &	forward! (100)
 &	right! (0.25)
 & }
-`,
+		 `,
 		 extensions: [
 			 basicSetup,
 			 keymap.of([indentWithTab]),
@@ -66,22 +67,22 @@ print! ("Hello, world!")
  let p;
 
  function draw_turtle (draw) {
- 	p.push();
- 	p.translate(p.width / 2, p.height / 2);
- 	p.rotate(p.PI);
- 	for (const [method, ...args] of draw) {
- 		p[method](...args);
- 	}
- 	p.pop();
+ 	 p.push();
+ 	 p.translate(p.width / 2, p.height / 2);
+ 	 p.rotate(p.PI);
+ 	 for (const [method, ...args] of draw) {
+ 		 p[method](...args);
+ 	 }
+ 	 p.pop();
  }
 
  function print_console (msgs) {
- 	for (const raw_msg of msgs) {
- 		for (const msg of raw_msg.split("\n").reverse()) {
-	 		console.log(msg);
-	 		ludusResponse = msg + "<br/>" + ludusResponse;
-	 	}
- 	}
+ 	 for (const raw_msg of msgs) {
+ 		 for (const msg of raw_msg.split("\n").reverse()) {
+	 		 console.log(msg);
+	 		 ludusResponse = msg + "<br/>" + ludusResponse;
+	 	 }
+ 	 }
  }
 
  function run_code () {
@@ -92,14 +93,14 @@ print! ("Hello, world!")
 	 let log = ludus_response.console ?? [];
 	 let {result, draw, errors = []} = ludus_response;
 	 if (draw) { draw_turtle(draw); } else { ludus_init(); }
-	 print_console([...errors, ...log]);
+		 print_console([...errors, ...log]);
 	 if (result) ludusResponse = "<i>:ludus=> </i>" + result + "<br/>" + ludusResponse;
  }
 
-function ludus_init () {
-	let {draw} = run(":nothing"); // get a response running nothing
-	draw_turtle(draw); // draw the base state
-}
+ function ludus_init () {
+	 let {draw} = run(":nothing"); // get a response running nothing
+	 draw_turtle(draw); // draw the base state
+ }
 
  const sketch = (p5) => {
 	 let cnv;
@@ -125,7 +126,7 @@ function ludus_init () {
 		<h1>Ludus</h1>
 		<a href="/" on:click|preventDefault={run_code}>RUN</a>
 		<link rel="stylesheet"
-  			href="https://fonts.googleapis.com/css?family=Victor+Mono">
+  				href="https://fonts.googleapis.com/css?family=Victor+Mono">
 	</header>
 	<div id="code-editor"></div>
 	<div id="canv">
@@ -144,7 +145,7 @@ function ludus_init () {
 	 width: 100%;
 	 height: 100%;
 	 grid-template-columns: 1fr 1fr;
-	 grid-template-rows: 2em auto auto 12em;
+	 grid-template-rows: 3em auto auto 12em;
 	 grid-template-areas:
 		 "header header"
 		 "editor canv"
@@ -154,11 +155,11 @@ function ludus_init () {
 
  header {
 	 grid-area: header;
-	 height: 2em;
 	 display: flex;
-	 align-items: baseline;
+	 align-items: center;
 	 justify-content: space-around;
 	 background: #245688;
+	 padding-top: 0.25em;
  }
 
  header h1 {
