@@ -5,28 +5,45 @@
  import { indentWithTab } from "@codemirror/commands";
  import { onMount } from "svelte";
  import P5 from "p5-svelte";
- import { run } from "@ludus/ludus-js-pure";
+ import ludus from "@ludus/ludus-js-pure";
+
+ const {run} = ludus;
 
  /*
 		TODO:
-	* [ ] change editor font to Victor Mono (we want ligatures) -> Matt
-		- see: https://codemirror.net/examples/styling/
-	* [ ] get Victor Mono cursive italics wired up -> Matt
-	* [ ] keep editor at fixed width, add line wrapping -> Matt
-	* [ ] add syntax highlighting (Lezer parser is almost ready to go) -> Scott (or Matt once the Lezer parser is ready)
+ 	* [ ] add syntax highlighting (Lezer parser is almost ready to go) -> Scott (or Matt once the Lezer parser is ready)
 	* [ ] figure out a documentation scheme -> Matt
 	* [ ] figure out how to redraw things on resize -> Matt
 	* [ ] write a "tour" of ludus with different code -> ?
 	* [ ] wire up a system whereby the code is loaded from a file, not hardcoded into js/svelte -> Matt
 	* [ ] improve console formatting -> Matt
 	* [ ] run only selected code -> Matt
-	* [ ] change console to have newest at bottom -> Matt
 	* [ ] add single line console input for quick testing/doc commands -> Matt
 	*/
 
  let editorState, view, ludusResponse = "";
 
+ function consoleScrollToBottom (node) {
+   return {
+		 update() {
+			 node.scroll({
+				 top: node.scrollHeight,
+				 behavior: 'smooth',
+			 })
+		 }
+	 }
+ };
+
  onMount(() => {
+
+	 const ludusCodeMirrorTheme = EditorView.theme({
+     "&": {
+       fontFamily:"'Victor Mono', monospace",
+			 fontSize: "0.9em"
+     },
+		 ".cm-scroller": {fontFamily: "inherit"}
+	 })
+
 	 editorState = EditorState.create({
 		 doc: `& Welcome to Ludus!
 & to run the code in this window, hit the RUN button
@@ -55,6 +72,8 @@ print! ("Hello, world!")
 		 `,
 		 extensions: [
 			 basicSetup,
+			 ludusCodeMirrorTheme,
+			 EditorView.lineWrapping,
 			 keymap.of([indentWithTab]),
 		 ]
 	 });
@@ -77,11 +96,11 @@ print! ("Hello, world!")
  	 p.pop();
  }
 
- function print_console (msgs) {
+ function print_console (result, msgs) {
+	 if (result) ludusResponse += "----<br><i>:ludus => </i>" + result + "<br>";
  	 for (const raw_msg of msgs) {
  		 for (const msg of raw_msg.split("\n").reverse()) {
-	 		 console.log(msg);
-	 		 ludusResponse = msg + "<br/>" + ludusResponse;
+	 		 ludusResponse += msg + "<br><br>";
 	 	 }
  	 }
  }
@@ -93,9 +112,8 @@ print! ("Hello, world!")
 	 let ludus_response = run(code);
 	 let log = ludus_response.console ?? [];
 	 let {result, draw, errors = []} = ludus_response;
-	 if (draw) { draw_turtle(draw); } else { ludus_init(); }
-		 print_console([...errors, ...log]);
-	 if (result) ludusResponse = "<i>:ludus=> </i>" + result + "<br/>" + ludusResponse;
+	 if (draw) { draw_turtle(draw); } else { ludus_init(); };
+	 print_console(result, [...errors, ...log]);
  }
 
  function ludus_init () {
@@ -113,7 +131,7 @@ print! ("Hello, world!")
 		 let w = canvas_elt.clientWidth;
 		 cnv = p5.createCanvas(w, h);
 		 cnv.parent("canv");
-		 console.log(cnv);
+		 // console.log(cnv);
 		 p5.noLoop();
 		 p5.background(0);
 		 ludus_init();
@@ -126,14 +144,12 @@ print! ("Hello, world!")
 	<header>
 		<h1>Ludus</h1>
 		<a href="/" on:click|preventDefault={run_code}>RUN</a>
-		<link rel="stylesheet"
-  				href="https://fonts.googleapis.com/css?family=Victor+Mono">
 	</header>
 	<div id="code-editor"></div>
 	<div id="canv">
 		<P5 {sketch} />
 	</div>
-	<div id="console">
+	<div id="console" use:consoleScrollToBottom={ludusResponse}>
 		{#if ludusResponse}
 			{@html ludusResponse}
 		{/if}
@@ -146,7 +162,7 @@ print! ("Hello, world!")
 	 width: 100%;
 	 height: 100%;
 	 grid-template-columns: 1fr 1fr;
-	 grid-template-rows: 3em auto auto 12em;
+	 grid-template-rows: 3em auto auto 15em;
 	 grid-template-areas:
 		 "header header"
 		 "editor canv"
@@ -213,8 +229,6 @@ print! ("Hello, world!")
 	 box-sizing: border-box;
 	 overflow-y: scroll;
 	 font-family: 'Victor Mono', monospace;
-	 font-weight: 200;
-	 font-size: 12px;
  }
 
  :global(.p5Canvas) {

@@ -1,3 +1,24 @@
+@font-face {
+  font-family: 'Victor Mono';
+  font-style: normal;
+  src: url('/fonts/VictorMono-Regular.eot');
+  src: url('/fonts/VictorMono-Regular.eot?#iefix') format('embedded-opentype'), url('/fonts/VictorMono-Regular.woff') format('woff'), url('/fonts/VictorMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Victor Mono';
+  font-style: italic;
+  src: url('/fonts/VictorMono-Italic.eot');
+  src: url('/fonts/VictorMono-Italic.eot?#iefix') format('embedded-opentype'), url('/fonts/VictorMono-Italic.woff') format('woff'), url('/fonts/VictorMono-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Victor Mono Oblique';
+  font-style: oblique;
+  src: url('/fonts/VictorMono-Oblique.eot');
+  src: url('/fonts/VictorMono-Oblique.eot?#iefix') format('embedded-opentype'), url('/fonts/VictorMono-Oblique.woff') format('woff'), url('/fonts/VictorMono-Oblique.ttf') format('truetype');
+}
+
 html, body {
 	margin: 0;
 	padding: 0;
